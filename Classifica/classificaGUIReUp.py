@@ -86,9 +86,10 @@ class ImageProcessorApp(Gtk.Window):
             img = cv2.resize(img, target_size)
 
             # Aplicar outras etapas de processamento aqui
-            #img = self.apply_color_conversion(img)
+            img = self.apply_color_conversion(img)
             img = self.apply_noise_removal(img)
-            img_with_contours = self.add_border_around_leaves(img)
+            #img = self.apply_histogram_equalization(img)
+            img = self.add_border_around_leaves(img)
             """
             img = self.apply_contrast_adjustment(img)
             img = self.apply_histogram_equalization(img)
@@ -99,7 +100,7 @@ class ImageProcessorApp(Gtk.Window):
             #img = self.remove_artifacts(img)
 
             output_path = os.path.join(self.output_dir, os.path.basename(image_path))
-            cv2.imwrite(output_path, img_with_contours)
+            cv2.imwrite(output_path, img)
 
     def apply_color_conversion(self, img):
         # Exemplo: Converta a imagem para escala de cinza (grayscale)
@@ -119,11 +120,14 @@ class ImageProcessorApp(Gtk.Window):
         return adjusted_img
     
     def apply_histogram_equalization(self, img):
-        equalized_img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-        l, a, b = cv2.split(equalized_img)
-        l_eq = cv2.equalizeHist(l)
-        equalized_lab = cv2.merge((l_eq, a, b))
-        equalized_img = cv2.cvtColor(equalized_lab, cv2.COLOR_LAB2BGR)
+        # Verifique se a imagem está em escala de cinza
+        if img.shape[-1] == 1:
+            # A imagem já está em escala de cinza, não é necessário converter
+            equalized_img = cv2.equalizeHist(img)
+        else:
+            # Se a imagem não estiver em escala de cinza, converta-a
+            #gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            equalized_img = cv2.equalizeHist(self.gray_img)
         return equalized_img
 
     
@@ -185,10 +189,10 @@ class ImageProcessorApp(Gtk.Window):
     
     def add_border_around_leaves(self, img):
 
-        segmented_img = self.color_segmentation(img)
+        #segmented_img = self.color_segmentation(img)
         # Converta a imagem para escala de cinza e aplique um filtro de suavização
-        gray = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
-        smoothed_img = cv2.GaussianBlur(gray, (5, 5), 0)
+        #gray = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
+        smoothed_img = cv2.GaussianBlur(self.gray_img, (5, 5), 0)
 
         # Realize a segmentação das folhas (você pode ajustar o limite conforme necessário)
         _, binary_image = cv2.threshold(smoothed_img, 128, 255, cv2.THRESH_BINARY)
@@ -198,7 +202,7 @@ class ImageProcessorApp(Gtk.Window):
 
         # Desenhe os contornos das folhas e adicione uma borda
         img_with_contours = img.copy()
-        border_color = (255, 0, 0)  # Cor da borda (verde)
+        border_color = (0, 0, 0)  # Cor da borda (azul)
         border_thickness = 3  # Espessura da borda
         cv2.drawContours(img_with_contours, contours, -1, border_color, border_thickness)
 
