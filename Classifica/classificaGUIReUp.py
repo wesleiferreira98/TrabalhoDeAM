@@ -75,12 +75,11 @@ class ImageProcessorApp(Gtk.Window):
             self.output_dir = dialog.get_filename()
         dialog.destroy()
 
-
     def process_images(self, widget):
         if not self.selected_images or not self.output_dir:
             return
 
-        target_size = (3024,4032 )  # Tamanho desejado das imagens
+        target_size = (3024, 4032)  # Tamanho desejado das imagens
         for image_path in self.selected_images:
             img = cv2.imread(image_path)
             img = cv2.resize(img, target_size)
@@ -88,16 +87,8 @@ class ImageProcessorApp(Gtk.Window):
             # Aplicar outras etapas de processamento aqui
             img = self.apply_color_conversion(img)
             img = self.apply_noise_removal(img)
-            #img = self.apply_histogram_equalization(img)
-            img = self.add_border_around_leaves(img)
-            """
-            img = self.apply_contrast_adjustment(img)
             img = self.apply_histogram_equalization(img)
-            img = self.apply_edge_filtering(img)
-            img = self.apply_intensity_normalization(img)
-            img = self.apply_segmentation(img)
-            """
-            #img = self.remove_artifacts(img)
+            img = self.add_border_around_leaves(img)
 
             output_path = os.path.join(self.output_dir, os.path.basename(image_path))
             cv2.imwrite(output_path, img)
@@ -115,10 +106,10 @@ class ImageProcessorApp(Gtk.Window):
     def apply_contrast_adjustment(self, img):
         # Exemplo: Ajuste o contraste e o brilho da imagem
         alpha = 1.5  # Ajuste o valor conforme necessário
-        beta = 10    # Ajuste o valor conforme necessário
+        beta = 10  # Ajuste o valor conforme necessário
         adjusted_img = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
         return adjusted_img
-    
+
     def apply_histogram_equalization(self, img):
         # Verifique se a imagem está em escala de cinza
         if img.shape[-1] == 1:
@@ -126,18 +117,14 @@ class ImageProcessorApp(Gtk.Window):
             equalized_img = cv2.equalizeHist(img)
         else:
             # Se a imagem não estiver em escala de cinza, converta-a
-            #gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             equalized_img = cv2.equalizeHist(self.gray_img)
         return equalized_img
-
-    
 
     def apply_edge_filtering(self, img):
         sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
         sobel_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5)
         sobel_combined = cv2.addWeighted(sobel_x, 0.5, sobel_y, 0.5, 0)
         return sobel_combined
-
 
     def apply_intensity_normalization(self, img):
         # Exemplo: Normalize a intensidade dos pixels para o intervalo [0, 1]
@@ -148,6 +135,7 @@ class ImageProcessorApp(Gtk.Window):
         # Aplique a segmentação colorida, você pode usar métodos como a detecção de cor ou outras técnicas para segmentar as áreas de interesse.
         segmented_img = self.color_segmentation(img)
         return segmented_img
+
     def color_segmentation(self, img):
         # Certifique-se de que a imagem está no formato CV_8U
         img = cv2.convertScaleAbs(img)
@@ -155,8 +143,10 @@ class ImageProcessorApp(Gtk.Window):
         # Converta a imagem BGR para o espaço de cores HSV
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-        lower_green = np.array([35, 50, 50], dtype=np.uint8)  # Ajuste os valores conforme necessário
-        upper_green = np.array([90, 255, 255], dtype=np.uint8)  # Ajuste os valores conforme necessário
+        # Ajuste os valores de detecção de verde para tons mais claros
+        # Ajuste os valores conforme necessário
+        lower_green = np.array([30, 50, 50], dtype=np.uint8)
+        upper_green = np.array([100, 255, 255], dtype=np.uint8)
 
 
         # Crie uma máscara que filtra as cores verdes
@@ -166,70 +156,36 @@ class ImageProcessorApp(Gtk.Window):
         segmented_img = cv2.bitwise_and(img, img, mask=mask)
 
         return segmented_img
-    
-    def color_segmentation(self, img):
-        # Certifique-se de que a imagem está no formato CV_8U
-        img = cv2.convertScaleAbs(img)
 
-        # Converta a imagem BGR para o espaço de cores HSV
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
-        # Defina o intervalo de tons de verde (ajuste os valores conforme necessário)
-        lower_green = np.array([30, 50, 50], dtype=np.uint8)
-        upper_green = np.array([90, 255, 255], dtype=np.uint8)
-
-        # Crie uma máscara que filtra os tons de verde no intervalo definido
-        mask = cv2.inRange(hsv, lower_green, upper_green)
-
-        # Aplique a máscara à imagem original
-        segmented_img = cv2.bitwise_and(img, img, mask=mask)
-
-        return segmented_img
-
-    
     def add_border_around_leaves(self, img):
-
-        #segmented_img = self.color_segmentation(img)
-        # Converta a imagem para escala de cinza e aplique um filtro de suavização
-        #gray = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
-        smoothed_img = cv2.GaussianBlur(self.gray_img, (5, 5), 0)
+        smoothed_img = cv2.GaussianBlur(self.gray_img, (15, 15), 0)
 
         # Realize a segmentação das folhas (você pode ajustar o limite conforme necessário)
-        _, binary_image = cv2.threshold(smoothed_img, 128, 255, cv2.THRESH_BINARY)
+        _, binary_image = cv2.threshold(smoothed_img, 148, 255, cv2.THRESH_BINARY)
 
         # Encontre os contornos das folhas
         contours, _ = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # Desenhe os contornos das folhas e adicione uma borda
         img_with_contours = img.copy()
-        border_color = (0, 0, 0)  # Cor da borda (azul)
-        border_thickness = 3  # Espessura da borda
+        border_color = (0, 0, 0)  # Cor da borda (preta)
+        border_thickness = 6  # Espessura da borda
         cv2.drawContours(img_with_contours, contours, -1, border_color, border_thickness)
 
         return img_with_contours
 
 
-    
-    # Clique em um ponto na imagem para obter os valores de pixel
-    def get_pixel(self,event, x, y, flags, param,img):
+    def get_pixel(self, event, x, y, flags, param, img):
         if event == cv2.EVENT_LBUTTONDOWN:
-            pixel = img[y, x]  # Obtém os valores de pixel na posição (x, y)
+            pixel = img[y, x]
             print("Valores de Pixel (BGR) em ({}, {}): {}".format(x, y, pixel))
-    
+
     def remove_artifacts(self, img):
         lower_reflection = np.array([200, 200, 200], dtype=np.uint8)
         upper_reflection = np.array([255, 255, 255], dtype=np.uint8)
-
         mask = cv2.inRange(img, lower_reflection, upper_reflection)
         mask_outside_range = cv2.bitwise_not(mask)
         img[mask_outside_range > 0] = [0, 0, 0]
-
-        return img
-
-    
-
-
-
 
 win = ImageProcessorApp()
 win.connect("destroy", Gtk.main_quit)
