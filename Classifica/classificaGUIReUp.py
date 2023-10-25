@@ -2,13 +2,16 @@ import os
 import cv2
 import gi
 import numpy as np
+import threading
+from concurrent.futures import ThreadPoolExecutor
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk,GLib
 
 class ImageProcessorApp(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Processador de Imagens")
         self.set_default_size(400, 200)
+        self.target_size = (1080, 1080)
         self.gray_img=None
         self.selected_images = []
         self.output_dir = ""
@@ -30,6 +33,9 @@ class ImageProcessorApp(Gtk.Window):
         self.process_button = Gtk.Button(label="Processar Imagens")
         self.process_button.connect("clicked", self.process_images)
         grid.attach(self.process_button, 0, 1, 2, 1)
+        self.progress_bar = Gtk.ProgressBar()
+        grid.attach(self.progress_bar, 0, 2, 2, 1)
+
 
         self.add(grid)
 
@@ -75,23 +81,46 @@ class ImageProcessorApp(Gtk.Window):
             self.output_dir = dialog.get_filename()
         dialog.destroy()
 
+    def update_progress(self, progress):
+        self.progress_bar.set_fraction(progress)
+
+    def process_image(self, image_path):
+        img = cv2.imread(image_path)
+        img = cv2.resize(img, self.target_size)
+
+        # Resto do processamento da imagem
+        img = self.apply_color_conversion(img)
+        img = self.apply_noise_removal(img)
+        img = self.apply_histogram_equalization(img)
+        img = self.add_border_around_leaves(img)
+
+        output_path = os.path.join(self.output_dir, os.path.basename(image_path))
+        cv2.imwrite(output_path, img)
+
     def process_images(self, widget):
         if not self.selected_images or not self.output_dir:
             return
 
         target_size = (1080, 1080)  # Tamanho desejado das imagens
-        for image_path in self.selected_images:
-            img = cv2.imread(image_path)
-            img = cv2.resize(img, target_size)
+        total_images = len(self.selected_images)
 
-            # Aplicar outras etapas de processamento aqui
-            img = self.apply_color_conversion(img)
-            img = self.apply_noise_removal(img)
-            img = self.apply_histogram_equalization(img)
-            img = self.add_border_around_leaves(img)
+        # Função para processar uma única imagem
+        def process_image(image_path):
+            self.process_image(image_path)
+            progress = float(i + 1) / total_images
+            GLib.idle_add(self.update_progress, progress)
 
-            output_path = os.path.join(self.output_dir, os.path.basename(image_path))
-            cv2.imwrite(output_path, img)
+        # Crie um ThreadPoolExecutor com o número desejado de threads
+        with ThreadPoolExecutor(max_workers=8) as executor:  # Escolha o número de threads desejado
+            for i, image_path in enumerate(self.selected_images):
+                # Submeta a função de processamento para ser executada em uma thread
+                progress = float(i + 1) / total_images
+                GLib.idle_add(self.update_progress, progress)
+                executor.submit(process_image, image_path)
+
+        # Reinicie a barra de progresso após o processamento estar completo
+        #GLib.idle_add(self.update_progress, 0.0)
+
 
     def apply_color_conversion(self, img):
         # Exemplo: Converta a imagem para escala de cinza (grayscale)
@@ -162,7 +191,7 @@ class ImageProcessorApp(Gtk.Window):
         img = cv2.convertScaleAbs(img, alpha=0.6, beta=0)  # Ajuste o valor alpha conforme necessário
 
         # Realize a segmentação das folhas (você pode ajustar o limite conforme necessário)
-        _, binary_image = cv2.threshold(img, 100, 255, cv2.THRESH_BINARY)
+        _, binary_image = cv2.threshold(img, 108, 255, cv2.THRESH_BINARY)
 
         # Encontre os contornos das folhas
         contours, _ = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -170,7 +199,7 @@ class ImageProcessorApp(Gtk.Window):
         # Desenhe os contornos das folhas e adicione uma borda
         img_with_contours = img.copy()
         border_color = (0, 0, 0)  # Cor da borda (preta)
-        border_thickness = 6  # Espessura da borda
+        border_thickness = 3  # Espessura da borda
         cv2.drawContours(img_with_contours, contours, -1, border_color, border_thickness)
 
         return img_with_contours
