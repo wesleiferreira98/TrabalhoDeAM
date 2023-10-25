@@ -79,7 +79,7 @@ class ImageProcessorApp(Gtk.Window):
         if not self.selected_images or not self.output_dir:
             return
 
-        target_size = (3024, 4032)  # Tamanho desejado das imagens
+        target_size = (1080, 1080)  # Tamanho desejado das imagens
         for image_path in self.selected_images:
             img = cv2.imread(image_path)
             img = cv2.resize(img, target_size)
@@ -158,10 +158,11 @@ class ImageProcessorApp(Gtk.Window):
         return segmented_img
 
     def add_border_around_leaves(self, img):
-        smoothed_img = cv2.GaussianBlur(self.gray_img, (15, 15), 0)
+        # Diminua o brilho da imagem em escala de cinza
+        img = cv2.convertScaleAbs(img, alpha=0.6, beta=0)  # Ajuste o valor alpha conforme necessário
 
         # Realize a segmentação das folhas (você pode ajustar o limite conforme necessário)
-        _, binary_image = cv2.threshold(smoothed_img, 148, 255, cv2.THRESH_BINARY)
+        _, binary_image = cv2.threshold(img, 100, 255, cv2.THRESH_BINARY)
 
         # Encontre os contornos das folhas
         contours, _ = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -173,6 +174,8 @@ class ImageProcessorApp(Gtk.Window):
         cv2.drawContours(img_with_contours, contours, -1, border_color, border_thickness)
 
         return img_with_contours
+
+
 
 
     def get_pixel(self, event, x, y, flags, param, img):
