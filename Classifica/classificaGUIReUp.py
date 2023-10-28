@@ -93,9 +93,13 @@ class ImageProcessorApp(Gtk.Window):
         img = self.apply_noise_removal(img)
         img = self.apply_histogram_equalization(img)
         img = self.add_border_around_leaves(img)
+        #img = self.refine_contours(img)
+        #img = self.fill_holes(img)
 
+        # Salve a imagem processada no diretório de saída
         output_path = os.path.join(self.output_dir, os.path.basename(image_path))
         cv2.imwrite(output_path, img)
+
 
     def process_images(self, widget):
         if not self.selected_images or not self.output_dir:
@@ -148,6 +152,40 @@ class ImageProcessorApp(Gtk.Window):
             # Se a imagem não estiver em escala de cinza, converta-a
             equalized_img = cv2.equalizeHist(self.gray_img)
         return equalized_img
+    def refine_contours(self, image):
+        # Adicione uma instrução de depuração para verificar a forma da imagem de entrada
+        print("Forma da imagem de entrada (refine_contours):", image.shape)
+
+        # Convert the image to binary
+        binary_image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+
+        # Apply an erosion filter
+        kernel = np.ones((3, 3), np.uint8)
+        eroded_image = cv2.erode(binary_image, kernel, iterations=1)
+
+        # Adicione uma instrução de depuração para verificar a forma da imagem erodida
+        print("Forma da imagem erodida (refine_contours):", eroded_image.shape)
+
+        return eroded_image
+
+    def fill_holes(self, image):
+        # Adicione uma instrução de depuração para verificar a forma da imagem de entrada
+        print("Forma da imagem de entrada (fill_holes):", image.shape)
+
+        # Convert the image to binary
+        binary_image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+
+        # Apply a closing filter
+        kernel = np.ones((3, 3), np.uint8)
+        closed_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+
+        # Adicione uma instrução de depuração para verificar a forma da imagem fechada
+        print("Forma da imagem fechada (fill_holes):", closed_image.shape)
+
+        return closed_image
+
+
+
 
     def apply_edge_filtering(self, img):
         sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
