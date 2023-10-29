@@ -93,8 +93,8 @@ class ImageProcessorApp(Gtk.Window):
         img = self.apply_noise_removal(img)
         img = self.apply_histogram_equalization(img)
         img = self.add_border_around_leaves(img)
-        #img = self.refine_contours(img)
-        #img = self.fill_holes(img)
+        img = self.refine_contours(img)
+        img = self.fill_holes(img)
 
         # Salve a imagem processada no diretório de saída
         output_path = os.path.join(self.output_dir, os.path.basename(image_path))
@@ -105,25 +105,18 @@ class ImageProcessorApp(Gtk.Window):
         if not self.selected_images or not self.output_dir:
             return
 
-        target_size = (1080, 1080)  # Tamanho desejado das imagens
         total_images = len(self.selected_images)
+        progress_step = 1.0 / total_images
 
-        # Função para processar uma única imagem
-        def process_image(image_path):
-            self.process_image(image_path)
-            progress = float(i + 1) / total_images
-            GLib.idle_add(self.update_progress, progress)
-
-        # Crie um ThreadPoolExecutor com o número desejado de threads
-        with ThreadPoolExecutor(max_workers=8) as executor:  # Escolha o número de threads desejado
+        def process_images_thread():
             for i, image_path in enumerate(self.selected_images):
-                # Submeta a função de processamento para ser executada em uma thread
-                progress = float(i + 1) / total_images
+                self.process_image(image_path)
+                progress = (i + 1) * progress_step
                 GLib.idle_add(self.update_progress, progress)
-                executor.submit(process_image, image_path)
 
-        # Reinicie a barra de progresso após o processamento estar completo
-        #GLib.idle_add(self.update_progress, 0.0)
+        # Crie uma thread para processar as imagens
+        processing_thread = threading.Thread(target=process_images_thread)
+        processing_thread.start()
 
 
     def apply_color_conversion(self, img):
@@ -156,8 +149,12 @@ class ImageProcessorApp(Gtk.Window):
         # Adicione uma instrução de depuração para verificar a forma da imagem de entrada
         print("Forma da imagem de entrada (refine_contours):", image.shape)
 
-        # Convert the image to binary
-        binary_image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+        if image.shape[-1] == 3:  # Verifique se a imagem não está em escala de cinza
+            # Convert the image to binary
+            _, binary_image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+        else:
+            # A imagem já está em escala de cinza
+            binary_image = image
 
         # Apply an erosion filter
         kernel = np.ones((3, 3), np.uint8)
@@ -168,12 +165,18 @@ class ImageProcessorApp(Gtk.Window):
 
         return eroded_image
 
+
+
     def fill_holes(self, image):
         # Adicione uma instrução de depuração para verificar a forma da imagem de entrada
         print("Forma da imagem de entrada (fill_holes):", image.shape)
 
-        # Convert the image to binary
-        binary_image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+        if image.shape[-1] == 3:  # Verifique se a imagem não está em escala de cinza
+            # Convert the image to binary
+            _, binary_image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+        else:
+            # A imagem já está em escala de cinza
+            binary_image = image
 
         # Apply a closing filter
         kernel = np.ones((3, 3), np.uint8)
@@ -226,7 +229,7 @@ class ImageProcessorApp(Gtk.Window):
 
     def add_border_around_leaves(self, img):
         # Diminua o brilho da imagem em escala de cinza
-        img = cv2.convertScaleAbs(img, alpha=0.6, beta=0)  # Ajuste o valor alpha conforme necessário
+        img = cv2.convertScaleAbs(img, alpha=0.8, beta=0)  # Ajuste o valor alpha conforme necessário
 
         # Realize a segmentação das folhas (você pode ajustar o limite conforme necessário)
         _, binary_image = cv2.threshold(img, 108, 255, cv2.THRESH_BINARY)
