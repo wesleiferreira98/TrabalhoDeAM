@@ -89,12 +89,16 @@ class ImageProcessorApp(Gtk.Window):
         img = cv2.resize(img, self.target_size)
 
         # Resto do processamento da imagem
+        """
         img = self.apply_color_conversion(img)
         img = self.apply_noise_removal(img)
         img = self.apply_histogram_equalization(img)
         img = self.add_border_around_leaves(img)
         img = self.refine_contours(img)
         img = self.fill_holes(img)
+        """
+        #img = self.enhance_green_color(img)
+        img = self.segment_palm(img)
 
         # Salve a imagem processada no diretório de saída
         output_path = os.path.join(self.output_dir, os.path.basename(image_path))
@@ -137,14 +141,23 @@ class ImageProcessorApp(Gtk.Window):
         return adjusted_img
 
     def apply_histogram_equalization(self, img):
-        # Verifique se a imagem está em escala de cinza
-        if img.shape[-1] == 1:
-            # A imagem já está em escala de cinza, não é necessário converter
-            equalized_img = cv2.equalizeHist(img)
+        if img.shape[-1] == 3:  # Verificar se a imagem está em cores
+            # Separe os canais de cor
+            b, g, r = cv2.split(img)
+
+            # Equalize o histograma de cada canal de cor
+            equalized_b = cv2.equalizeHist(b)
+            equalized_g = cv2.equalizeHist(g)
+            equalized_r = cv2.equalizeHist(r)
+
+            # Combine os canais novamente
+            equalized_img = cv2.merge((equalized_b, equalized_g, equalized_r))
         else:
-            # Se a imagem não estiver em escala de cinza, converta-a
-            equalized_img = cv2.equalizeHist(self.gray_img)
+            # Se a imagem já estiver em escala de cinza, igualize o histograma diretamente
+            equalized_img = cv2.equalizeHist(img)
+
         return equalized_img
+
     def refine_contours(self, image):
         # Adicione uma instrução de depuração para verificar a forma da imagem de entrada
         print("Forma da imagem de entrada (refine_contours):", image.shape)
@@ -226,6 +239,32 @@ class ImageProcessorApp(Gtk.Window):
         segmented_img = cv2.bitwise_and(img, img, mask=mask)
 
         return segmented_img
+    def segment_palm(self, image):
+        # Converta a imagem para o espaço de cores HSV
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+        # Definir intervalo de verde para criar a máscara
+        lower = np.array([35, 10, 10])  # Verde mais escuro
+        upper = np.array([80, 200, 200])# Verde mais claro
+
+        # Crie uma máscara usando os intervalos de cor definidos
+        mask = cv2.inRange(hsv, lower, upper)
+
+        # Aplique a máscara à imagem original
+        segmented_image = cv2.bitwise_and(image, image, mask=mask)
+        return segmented_image
+    
+    def enhance_green_color(self, img):
+        if img.shape[-1] == 3:  # Verificar se a imagem está em cores
+            # Ajuste o canal verde para intensificar a cor verde
+            img[:, :, 1] = np.clip(img[:, :, 1] * 1.5, 0, 255)  # Canal verde (índice 1)
+
+        return img
+
+
+
+
+
 
     def add_border_around_leaves(self, img):
         # Diminua o brilho da imagem em escala de cinza
