@@ -98,7 +98,8 @@ class ImageProcessorApp(Gtk.Window):
         img = self.fill_holes(img)
         """
         #img = self.enhance_green_color(img)
-        img = self.segment_palm(img)
+        img = self.apply_segmentation(img)
+        
 
         # Salve a imagem processada no diretório de saída
         output_path = os.path.join(self.output_dir, os.path.basename(image_path))
@@ -239,20 +240,7 @@ class ImageProcessorApp(Gtk.Window):
         segmented_img = cv2.bitwise_and(img, img, mask=mask)
 
         return segmented_img
-    def segment_palm(self, image):
-        # Converta a imagem para o espaço de cores HSV
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-        # Definir intervalo de verde para criar a máscara
-        lower = np.array([35, 10, 10])  # Verde mais escuro
-        upper = np.array([80, 200, 200])# Verde mais claro
-
-        # Crie uma máscara usando os intervalos de cor definidos
-        mask = cv2.inRange(hsv, lower, upper)
-
-        # Aplique a máscara à imagem original
-        segmented_image = cv2.bitwise_and(image, image, mask=mask)
-        return segmented_image
+    
     
     def enhance_green_color(self, img):
         if img.shape[-1] == 3:  # Verificar se a imagem está em cores
@@ -260,10 +248,6 @@ class ImageProcessorApp(Gtk.Window):
             img[:, :, 1] = np.clip(img[:, :, 1] * 1.5, 0, 255)  # Canal verde (índice 1)
 
         return img
-
-
-
-
 
 
     def add_border_around_leaves(self, img):
