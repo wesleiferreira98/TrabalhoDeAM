@@ -97,7 +97,7 @@ class ImageProcessorApp(Gtk.Window):
         img = self.refine_contours(img)
         img = self.fill_holes(img)
         """
-        #img = self.enhance_green_color(img)
+        #img = self.apply_noise_removal(img)
         img = self.apply_segmentation(img)
         
 
@@ -229,7 +229,7 @@ class ImageProcessorApp(Gtk.Window):
 
         # Ajuste os valores de detecção de verde para tons mais claros
         # Ajuste os valores conforme necessário
-        lower_green = np.array([30, 50, 50], dtype=np.uint8)
+        lower_green = np.array([23, 50, 50], dtype=np.uint8)
         upper_green = np.array([100, 255, 255], dtype=np.uint8)
 
 
