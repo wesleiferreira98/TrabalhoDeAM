@@ -12,7 +12,7 @@ from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCan
 
 class ImageProcessorApp(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title="Processador de Imagens")
+        Gtk.Window.__init__(self, title="Treino do modelo")
         self.set_default_size(500, 300)
         self.target_size = (1080, 1080)
         self.gray_img=None
