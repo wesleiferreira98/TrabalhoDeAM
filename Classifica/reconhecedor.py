@@ -8,7 +8,7 @@ import matplotlib
 matplotlib.use('Agg')
 """
 Ao que parece há um conflito entre o back end usado no fedora e o Agg que 
-e necessario no debian, por isso o uso do matplotlib.use('agg'). 
+e necessario no debian, por isso o uso do matplotlib.use('Agg'). 
 """
 import gi
 gi.require_version("Gtk", "3.0")
