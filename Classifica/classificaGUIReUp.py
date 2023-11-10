@@ -11,6 +11,7 @@ class ImageProcessorApp(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Processador de Imagens")
         self.set_default_size(400, 200)
+        self.set_resizable(False)
         self.target_size = (1080, 1080)
         self.gray_img=None
         self.selected_images = []
@@ -19,25 +20,32 @@ class ImageProcessorApp(Gtk.Window):
         self.init_ui()
 
     def init_ui(self):
-        grid = Gtk.Grid()
-        grid.set_column_homogeneous(True)
+        self.grid = Gtk.Grid()
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_spacing(10)  # Ajusta o espaçamento vertical entre as linhas
 
         self.select_images_button = Gtk.Button(label="Selecionar Imagens")
         self.select_images_button.connect("clicked", self.select_images)
-        grid.attach(self.select_images_button, 0, 0, 1, 1)
+        self.grid.attach(self.select_images_button, 0, 0, 1, 1)
 
         self.select_output_dir_button = Gtk.Button(label="Selecionar Diretório de Saída")
         self.select_output_dir_button.connect("clicked", self.select_output_dir)
-        grid.attach(self.select_output_dir_button, 1, 0, 1, 1)
+        self.grid.attach(self.select_output_dir_button, 1, 0, 1, 1)
 
         self.process_button = Gtk.Button(label="Processar Imagens")
         self.process_button.connect("clicked", self.process_images)
-        grid.attach(self.process_button, 0, 1, 2, 1)
+        self.grid.attach(self.process_button, 0, 1, 2, 1)
         self.progress_bar = Gtk.ProgressBar()
-        grid.attach(self.progress_bar, 0, 2, 2, 1)
+        self.grid.attach(self.progress_bar, 0, 2, 2, 1)
+
+         # Ajusta o espaçamento horizontal entre as colunas
+        self.grid.set_column_spacing(10)
+
+        # Ajusta o espaçamento externo (borda) da janela
+        self.set_border_width(10)
 
 
-        self.add(grid)
+        self.add(self.grid)
 
     def select_images(self, widget):
         dialog = Gtk.FileChooserDialog(
