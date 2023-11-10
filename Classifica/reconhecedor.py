@@ -5,7 +5,7 @@ from gi.repository import Gtk, GLib
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, precision_recall_fscore_support
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
 
@@ -13,9 +13,8 @@ from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCan
 class ImageProcessorApp(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Treino do modelo")
-        self.set_default_size(500, 300)
-        self.target_size = (1080, 1080)
-        self.gray_img=None
+        self.set_default_size(520, 320)
+        self.set_resizable(False)
         self.selected_images = []
         self.output_dir = ""
         self.model = None  # Adicionado para armazenar o modelo treinado
@@ -55,7 +54,7 @@ class ImageProcessorApp(Gtk.Window):
         self.set_border_width(10)
 
         # Define o tamanho da janela
-        self.set_size_request(500, 300)
+        self.set_size_request(520, 320)
 
 
     def select_txt_files(self, widget):
