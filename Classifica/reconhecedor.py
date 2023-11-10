@@ -1,13 +1,12 @@
-from concurrent.futures import ThreadPoolExecutor
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GLib
 
 
 class ImageProcessorApp(Gtk.Window):
@@ -137,8 +136,6 @@ class ImageProcessorApp(Gtk.Window):
         # Atualize as labels de acurácia, precisão, revocação e F1-score
         self.accuracy_label.set_label(f'Acurácia do modelo: {rounded_accuracy}')
         self.f1_score_label.set_label(f'F1-score do modelo: {rounded_f1}')
-
-        # ...
 
         # Crie um gráfico de barras com cores diferentes
         fig, ax = plt.subplots()
