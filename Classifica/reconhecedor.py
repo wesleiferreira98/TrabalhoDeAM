@@ -25,6 +25,9 @@ class ImageProcessorApp(Gtk.Window):
         self.model = None  # Adicionado para armazenar o modelo treinado
         self.accuracy_label = Gtk.Label(label="Acurácia do modelo: ")
         self.f1_score_label = Gtk.Label(label="F1-score do modelo: ")
+        self.precision = Gtk.Label(label="Precisão do modelo: ")
+        self.revocacao = Gtk.Label(label="Revocação do modelo: ")
+
 
         self.init_ui()
 
@@ -44,11 +47,17 @@ class ImageProcessorApp(Gtk.Window):
         self.progress_bar = Gtk.ProgressBar()
         self.grid.attach(self.progress_bar, 0, 2, 2, 1)
 
-        self.accuracy_label = Gtk.Label(label="Acurácia do modelo: ")
-        self.grid.attach(self.accuracy_label, 0, 3, 2, 1)
+        self.accuracy_label = Gtk.Label(label="Acurácia do modelo:")
+        self.grid.attach(self.accuracy_label, 0, 3, 1, 1)
 
-        self.f1_score_label = Gtk.Label(label="F1-score do modelo: ")
-        self.grid.attach(self.f1_score_label, 0, 4, 2, 1)
+        self.f1_score_label = Gtk.Label(label="F1-score do modelo:")
+        self.grid.attach(self.f1_score_label, 1, 3, 1, 1)
+
+        self.precision = Gtk.Label(label="Precisão do modelo:")
+        self.grid.attach(self.precision, 0, 4, 1, 1)
+
+        self.revocacao = Gtk.Label(label="Revocação do modelo:")
+        self.grid.attach(self.revocacao, 1, 4, 1, 1)
 
         self.add(self.grid)
         
@@ -156,10 +165,12 @@ class ImageProcessorApp(Gtk.Window):
             if prec != 0.0:
                 metrics.append('Precisão')
                 values.append(prec)
+                self.precision.set_label(f'Precisão do modelo: {prec}')
 
             if rec != 0.0:
                 metrics.append('Revocação')
                 values.append(rec)
+                self.revocacao.set_label(f'Revocação do modelo: {rec}')
 
         colors = ['blue', 'green', 'orange', 'red'][:len(metrics)]
         bars = ax.bar(metrics, values, color=colors)
