@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
+import matplotlib
+matplotlib.use('Agg')
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib
