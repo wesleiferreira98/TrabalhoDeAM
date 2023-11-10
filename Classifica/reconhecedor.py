@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
 import matplotlib
 matplotlib.use('Agg')
+"""
+Ao que parece há um conflito entre o back end usado no fedora e o Agg que 
+e necessario no debian, por isso o uso do matplotlib.use('agg'). 
+"""
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib
