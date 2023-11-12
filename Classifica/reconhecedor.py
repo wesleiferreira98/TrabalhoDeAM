@@ -137,17 +137,20 @@ class ImageProcessorApp(Gtk.Window):
         accuracy = accuracy_score(y_test, self.model.predict(X_test))
         f1 = f1_score(y_test, self.model.predict(X_test), average='weighted')
 
-        precision_per_class = precision_score(y_test, y_test_pred, average=None)
-        recall_per_class = recall_score(y_test, y_test_pred, average=None)
+        precision_per_class = precision_score(y_test, y_test_pred, average='weighted')
+        recall_per_class = recall_score(y_test, y_test_pred, average='weighted')
 
         # Arredonde os valores para 2 casas decimais
         rounded_accuracy = round(accuracy, 2)
         rounded_f1 = round(f1, 2)
 
         # Arredonde a precisão e revocação para 2 casas decimais e trate o valor indefinido como 0
-        rounded_precision = [round(p, 2) if not np.isnan(p) else 0.0 for p in precision_per_class]
-        rounded_recall = [round(r, 2) if not np.isnan(r) else 0.0 for r in recall_per_class]
+        #rounded_precision = [round(p, 2) if not np.isnan(p) else 0.0 for p in precision_per_class]
+        #rounded_recall = [round(r, 2) if not np.isnan(r) else 0.0 for r in recall_per_class]
 
+        rounded_precision= round(precision_per_class,2)
+        rounded_recall = round(recall_per_class,2)
+        
         # Atualize as labels de acurácia, precisão, revocação e F1-score
         self.accuracy_label.set_label(f'Acurácia do modelo: {rounded_accuracy}')
         self.f1_score_label.set_label(f'F1-score do modelo: {rounded_f1}')
@@ -157,6 +160,15 @@ class ImageProcessorApp(Gtk.Window):
         metrics = ['Acurácia', 'F1-score']
         values = [rounded_accuracy, rounded_f1]
 
+        metrics.append('Precisão')
+        values.append(rounded_precision)
+        self.precision.set_label(f'Precisão do modelo: {rounded_precision}')
+
+        metrics.append('Revocação')
+        values.append(rounded_recall)
+        self.revocacao.set_label(f'Revocação do modelo: {rounded_recall}')
+
+        """
         # Adicione precisão e revocação ao gráfico
         for i, (prec, rec) in enumerate(zip(rounded_precision, rounded_recall)):
             label = f'Classe {i + 1}'
@@ -165,12 +177,13 @@ class ImageProcessorApp(Gtk.Window):
             if prec != 0.0:
                 metrics.append('Precisão')
                 values.append(prec)
-                self.precision.set_label(f'Precisão do modelo: {prec}')
+                self.precision.set_label(f'Precisão do modelo: {rounded_precision}')
 
             if rec != 0.0:
                 metrics.append('Revocação')
                 values.append(rec)
-                self.revocacao.set_label(f'Revocação do modelo: {rec}')
+                self.revocacao.set_label(f'Revocação do modelo: {rounded_recall}')
+        """
 
         colors = ['blue', 'green', 'orange', 'red'][:len(metrics)]
         bars = ax.bar(metrics, values, color=colors)
