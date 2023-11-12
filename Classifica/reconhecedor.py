@@ -2,6 +2,8 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import confusion_matrix
+import itertools
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
 import matplotlib
@@ -14,6 +16,30 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib
 
+def plot_confusion_matrix(y_true, y_pred, class_names):
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(8, 6))
+    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title('Matriz de Confusão')
+    plt.colorbar()
+    tick_marks = np.arange(len(class_names))
+    plt.xticks(tick_marks, class_names, rotation=45)
+    plt.yticks(tick_marks, class_names)
+
+    fmt = 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.ylabel('Rótulo Real')
+    plt.xlabel('Rótulo Previsto')
+    plt.tight_layout()
+
+    # Salvar a imagem temporária para exibir no GTK
+    plt.savefig('confusion_matrix.png')
+    plt.close()
 
 class ImageProcessorApp(Gtk.Window):
     def __init__(self):
@@ -204,6 +230,27 @@ class ImageProcessorApp(Gtk.Window):
         # Adicione o widget do gráfico diretamente ao grid
         self.grid.attach(chart_widget, 0, 6, 2, 1)
         self.grid.show_all()  # Atualiza a interface para mostrar o gráfico
+
+         # Adicione o gráfico à interface
+        chart_canvas = FigureCanvas(fig)
+        chart_widget = Gtk.ScrolledWindow()
+        chart_widget.set_size_request(300, 200)
+        chart_widget.add(chart_canvas)
+
+        # Adicione o widget do gráfico diretamente ao grid
+        self.grid.attach(chart_widget, 0, 6, 2, 1)
+        self.grid.show_all()  # Atualiza a interface para mostrar o gráfico
+
+        # Crie e mostre a matriz de confusão
+        class_names = [f'Classe {i+1}' for i in range(len(np.unique(y_test)))]  # Ajuste conforme suas classes
+        plot_confusion_matrix(y_test, y_test_pred, class_names)
+
+        # Carregue a imagem da matriz de confusão
+        confusion_image = Gtk.Image.new_from_file('confusion_matrix.png')
+
+        # Adicione a matriz de confusão abaixo do gráfico de métricas
+        self.grid.attach_next_to(confusion_image, chart_widget, Gtk.PositionType.BOTTOM, 2, 1)
+        self.grid.show_all()
 
 
     
