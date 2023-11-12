@@ -220,7 +220,7 @@ class ImageProcessorApp(Gtk.Window):
             ax.text(bar.get_x() + bar.get_width() / 2, height, f'{value}', ha='center', va='bottom')
 
 
-
+        plt.savefig("grafico de metricas.png")
         # Adicione o gráfico à interface
         chart_canvas = FigureCanvas(fig)
         chart_widget = Gtk.ScrolledWindow()
@@ -251,14 +251,6 @@ class ImageProcessorApp(Gtk.Window):
         # Adicione a matriz de confusão abaixo do gráfico de métricas
         self.grid.attach_next_to(confusion_image, chart_widget, Gtk.PositionType.BOTTOM, 2, 1)
         self.grid.show_all()
-
-
-    
-    
-
-
-
-
 
 if __name__ == "__main__":
     app = ImageProcessorApp()
