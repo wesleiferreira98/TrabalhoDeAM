@@ -45,7 +45,7 @@ class ImageProcessorApp(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Treino do modelo")
         self.set_default_size(520, 320)
-        self.set_resizable(False)
+        #self.set_resizable(False)
         self.selected_images = []
         self.output_dir = ""
         self.model = None  # Adicionado para armazenar o modelo treinado
@@ -94,7 +94,7 @@ class ImageProcessorApp(Gtk.Window):
         self.set_border_width(10)
 
         # Define o tamanho da janela
-        self.set_size_request(520, 320)
+        self.set_size_request(520, 300)
 
 
     def select_txt_files(self, widget):
@@ -234,7 +234,7 @@ class ImageProcessorApp(Gtk.Window):
          # Adicione o gráfico à interface
         chart_canvas = FigureCanvas(fig)
         chart_widget = Gtk.ScrolledWindow()
-        chart_widget.set_size_request(300, 200)
+        chart_widget.set_size_request(200, 200)
         chart_widget.add(chart_canvas)
 
         # Adicione o widget do gráfico diretamente ao grid
