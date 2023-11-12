@@ -142,14 +142,14 @@ class ImageProcessorApp(Gtk.Window):
 
         # Arredonde os valores para 2 casas decimais
         rounded_accuracy = round(accuracy, 2)
-        rounded_f1 = round(f1, 2)
+        rounded_f1 = round(f1, 2) # type: ignore
 
         # Arredonde a precisão e revocação para 2 casas decimais e trate o valor indefinido como 0
         #rounded_precision = [round(p, 2) if not np.isnan(p) else 0.0 for p in precision_per_class]
         #rounded_recall = [round(r, 2) if not np.isnan(r) else 0.0 for r in recall_per_class]
 
-        rounded_precision= round(precision_per_class,2)
-        rounded_recall = round(recall_per_class,2)
+        rounded_precision= round(precision_per_class,2) # type: ignore
+        rounded_recall = round(recall_per_class,2) # type: ignore
         
         # Atualize as labels de acurácia, precisão, revocação e F1-score
         self.accuracy_label.set_label(f'Acurácia do modelo: {rounded_accuracy}')
