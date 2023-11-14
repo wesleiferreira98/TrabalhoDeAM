@@ -37,7 +37,6 @@ def plot_confusion_matrix(y_true, y_pred, class_names):
     plt.xlabel('Rótulo Previsto')
     plt.tight_layout()
 
-    # Salvar a imagem temporária para exibir no GTK
     plt.savefig('confusion_matrix.png')
     plt.close()
 
@@ -241,8 +240,7 @@ class ImageProcessorApp(Gtk.Window):
         self.grid.attach(chart_widget, 0, 6, 2, 1)
         self.grid.show_all()  # Atualiza a interface para mostrar o gráfico
 
-        # Crie e mostre a matriz de confusão
-        class_names = [f'Classe {i+1}' for i in range(len(np.unique(y_test)))]  # Ajuste conforme suas classes
+        class_names = ["Positivos", "Negativos"]
         plot_confusion_matrix(y_test, y_test_pred, class_names)
 
         # Carregue a imagem da matriz de confusão
