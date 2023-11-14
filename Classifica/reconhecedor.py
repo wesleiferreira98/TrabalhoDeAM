@@ -44,7 +44,7 @@ class ImageProcessorApp(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Treino do modelo")
         self.set_default_size(520, 320)
-        self.set_resizable(False)
+        self.set_resizable(True)
         self.selected_images = []
         self.output_dir = ""
         self.model = None  # Adicionado para armazenar o modelo treinado
