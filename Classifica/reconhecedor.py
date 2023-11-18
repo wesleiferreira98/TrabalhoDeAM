@@ -156,13 +156,20 @@ class ImageProcessorApp(Gtk.Window):
         )
 
          # Crie e treine o modelo
-        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        self.model = RandomForestClassifier(n_estimators=70, random_state=42)
         self.model.fit(X_train, y_train)
         y_test_pred = self.model.predict(X_test)
 
         model_filename = "modelo_treinado.joblib"
         joblib.dump(self.model, model_filename)
         print(f"Modelo treinado salvo em: {model_filename}")
+
+        # Carregue o modelo treinado
+        model_filename = "modelo_treinado.joblib"
+        loaded_model = joblib.load(model_filename)
+
+        # Agora, `loaded_model` é o modelo treinado que você salvou
+
 
         accuracy = accuracy_score(y_test, self.model.predict(X_test))
         f1 = f1_score(y_test, self.model.predict(X_test), average='weighted')
