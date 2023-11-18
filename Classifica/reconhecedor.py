@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from sklearn.metrics import confusion_matrix
 import itertools
 import matplotlib.pyplot as plt
+import joblib
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as FigureCanvas
 import matplotlib
 matplotlib.use('Agg')
@@ -158,6 +159,10 @@ class ImageProcessorApp(Gtk.Window):
         self.model = RandomForestClassifier(n_estimators=100, random_state=42)
         self.model.fit(X_train, y_train)
         y_test_pred = self.model.predict(X_test)
+
+        model_filename = "modelo_treinado.joblib"
+        joblib.dump(self.model, model_filename)
+        print(f"Modelo treinado salvo em: {model_filename}")
 
         accuracy = accuracy_score(y_test, self.model.predict(X_test))
         f1 = f1_score(y_test, self.model.predict(X_test), average='weighted')
