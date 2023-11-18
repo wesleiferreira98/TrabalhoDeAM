@@ -174,10 +174,6 @@ class ImageProcessorApp(Gtk.Window):
         rounded_accuracy = round(accuracy, 2)
         rounded_f1 = round(f1, 2) # type: ignore
 
-        # Arredonde a precisão e revocação para 2 casas decimais e trate o valor indefinido como 0
-        #rounded_precision = [round(p, 2) if not np.isnan(p) else 0.0 for p in precision_per_class]
-        #rounded_recall = [round(r, 2) if not np.isnan(r) else 0.0 for r in recall_per_class]
-
         rounded_precision= round(precision_per_class,2) # type: ignore
         rounded_recall = round(recall_per_class,2) # type: ignore
         
@@ -197,23 +193,6 @@ class ImageProcessorApp(Gtk.Window):
         metrics.append('Revocação')
         values.append(rounded_recall)
         self.revocacao.set_label(f'Revocação do modelo: {rounded_recall}')
-
-        """
-        # Adicione precisão e revocação ao gráfico
-        for i, (prec, rec) in enumerate(zip(rounded_precision, rounded_recall)):
-            label = f'Classe {i + 1}'
-            
-            # Verifique se o valor é diferente de 0 antes de adicionar ao gráfico
-            if prec != 0.0:
-                metrics.append('Precisão')
-                values.append(prec)
-                self.precision.set_label(f'Precisão do modelo: {rounded_precision}')
-
-            if rec != 0.0:
-                metrics.append('Revocação')
-                values.append(rec)
-                self.revocacao.set_label(f'Revocação do modelo: {rounded_recall}')
-        """
 
         colors = ['blue', 'green', 'orange', 'red'][:len(metrics)]
         bars = ax.bar(metrics, values, color=colors)
