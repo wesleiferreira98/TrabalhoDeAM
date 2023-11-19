@@ -1,9 +1,9 @@
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GdkPixbuf, Gdk
 import cv2
 import numpy as np
 import os
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GdkPixbuf, Gdk
 
 class ImageProcessorApp(Gtk.Window):
     def __init__(self):
@@ -114,7 +114,7 @@ class ImageProcessorApp(Gtk.Window):
 
                     cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-        processed_image_path = os.path.join(self.output_dir, "processed_image.jpg")
+        processed_image_path = os.path.join(str(self.output_dir), "processed_image.jpg")
         cv2.imwrite(processed_image_path, image)
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
