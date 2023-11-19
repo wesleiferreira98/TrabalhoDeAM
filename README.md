@@ -1,5 +1,4 @@
-# TrabalhoDeAM
-
+# Classificação de Espécies de Palmeiras no Sudoeste Baiano Através da Análise de Folhas
 
 # Treino do Modelo e Avaliação de Desempenho - Documentação
 
@@ -98,7 +97,6 @@ if __name__ == "__main__":
 Este bloco de código cria uma instância da classe `ImageProcessorApp` e inicia a aplicação GTK quando o script é executado.
 
 Certifique-se de ter as bibliotecas e dependências instaladas antes de executar o script.
-
 
 # Processador de Imagens - Documentação
 
@@ -242,7 +240,6 @@ Este bloco de código cria uma instância da classe `ImageProcessorApp` e inicia
 
 Certifique-se de ter as bibliotecas e dependências instaladas antes de executar o script.
 
-
 # Treinamento de Modelo - Documentação
 
 ## Resumo
@@ -338,10 +335,10 @@ Grafícos de Acuracia, F1-socore, Revocação e Precisão
 
 ![Texto Alternativo](image/README/1700430286703.png)
 
-Matriz de Confusão 
+Matriz de Confusão
 
 ![1700430502715](image/README/1700430502715.png)
 
-Grafíco de Regressão 
+Grafíco de Regressão
 
 ![1700430551345](image/README/1700430551345.png)
