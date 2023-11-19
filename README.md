@@ -331,14 +331,14 @@ Certifique-se de ter as bibliotecas e dependências instaladas antes de executar
 
 ## Resultados finais do Trabalho
 
-Grafícos de Acuracia, F1-socore, Revocação e Precisão
+### Gráficos de Acuracia, F1-socore, Revocação e Precisão
 
 ![Texto Alternativo](image/README/1700430286703.png)
 
-Matriz de Confusão
+### Matriz de Confusão
 
 ![1700430502715](image/README/1700430502715.png)
 
-Grafíco de Regressão
+### Gráfico de Regressão
 
 ![1700430551345](image/README/1700430551345.png)
