@@ -239,7 +239,7 @@ class ImageProcessorApp(Gtk.Window):
         # Adicione a matriz de confusão dentro de um widget de rolagem
         confusion_scrolled = Gtk.ScrolledWindow()
         confusion_scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)  # Adiciona a barra de rolagem vertical
-        confusion_scrolled.set_size_request(-1, 400)
+        confusion_scrolled.set_size_request(300, 520)
         confusion_scrolled.add(confusion_image)
 
         # Adicione a matriz de confusão rolável abaixo do gráfico de métricas
