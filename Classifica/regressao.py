@@ -18,7 +18,7 @@ from gi.repository import Gtk, GLib
 
 class ImageProcessorApp(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title="Treino do modelo")
+        Gtk.Window.__init__(self, title="Treino do modelo (Regressão)")
         self.set_default_size(520, 320)
         self.set_resizable(True)
         self.selected_images = []
