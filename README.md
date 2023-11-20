@@ -1,4 +1,4 @@
-# Classificação de Espécies de Palmeiras no Sudoeste Baiano Através da Análise de Folhas
+# Classificação de Espécies de Palmas no Sudoeste Baiano Através da Análise de Folhas
 
 # Treino do Modelo e Avaliação de Desempenho - Documentação
 
